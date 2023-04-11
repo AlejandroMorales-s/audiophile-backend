@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
+require("./src/passport");
 
 const app = express();
 
@@ -13,9 +14,9 @@ app.use(cors());
 app.use(
   session({
     secret: "secret",
-    cookie: { maxAge: 60000 },
-    resave: true,
-    saveUninitialized: true,
+    cookie: { maxAge: 60000, secure: false, sameSite: "none" },
+    saveUninitialized: false,
+    resave: false,
   })
 );
 

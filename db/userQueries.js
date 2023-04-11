@@ -16,6 +16,17 @@ const getUserByEmail = (email) => {
   });
 };
 
+const getUserById = (id) => {
+  return new Promise((resolve, reject) => {
+    pool.query("SELECT * FROM users WHERE id = $1", [id], (err, results) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(results.rows[0]);
+    });
+  });
+};
+
 const createUser = async (user, callback) => {
   const { email, password, lastName, firstName } = user;
 
@@ -38,4 +49,5 @@ const createUser = async (user, callback) => {
 module.exports = {
   getUserByEmail,
   createUser,
+  getUserById,
 };

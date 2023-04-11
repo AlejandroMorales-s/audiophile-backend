@@ -1,5 +1,6 @@
-const { createUser, getUserByEmail } = require("../db");
 const authRouter = require("express").Router();
+const passport = require("passport");
+const { createUser, getUserByEmail } = require("../db");
 
 authRouter.post("/register", async (req, res) => {
   const user = req.body;
@@ -21,5 +22,13 @@ authRouter.post("/register", async (req, res) => {
       .json({ message: "User created with id: " + results.rows[0].id });
   });
 });
+
+authRouter.post(
+  "/login",
+  passport.authenticate("local", { failureRedirect: "/login" }),
+  (req, res) => {
+    res.status(200).json(req.user);
+  }
+);
 
 module.exports = authRouter;

@@ -1,6 +1,7 @@
-const { createUser, getUserByEmail } = require("./userQueries");
+const { createUser, getUserByEmail, getUserById } = require("./userQueries");
 
 module.exports = {
   createUser,
   getUserByEmail,
+  getUserById,
 };
