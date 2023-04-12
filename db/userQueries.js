@@ -38,7 +38,7 @@ const createUser = async (user, callback) => {
     [email, passwordHashed, lastName, firstName],
     (err, results) => {
       if (err) {
-        callback(err, null);
+        callback(err.message, null);
         return;
       }
       callback(null, results);

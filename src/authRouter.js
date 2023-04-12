@@ -14,7 +14,7 @@ authRouter.post("/register", async (req, res) => {
 
   createUser(user, (err, results) => {
     if (err) {
-      res.status(500).json({ message: "Server error" });
+      res.status(500).json({ message: err });
       return;
     }
     res
