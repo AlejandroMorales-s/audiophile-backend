@@ -9,6 +9,7 @@ const getUserByEmail = (email) => {
       (err, results) => {
         if (err) {
           reject(err);
+          return;
         }
         resolve(results.rows[0]);
       }
