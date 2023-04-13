@@ -34,7 +34,7 @@ const createUser = async (user, callback) => {
   const passwordHashed = await bcrypt.hash(password, salt);
 
   pool.query(
-    "INSERT INTO users VALUES (DEFAULT, $1, $2, $3, $4) RETURNING *",
+    "INSERT INTO users VALUES (DEFAULT, $1, $2, $3, $4) RETURNING id, email, last_name, first_name",
     [email, passwordHashed, lastName, firstName],
     (err, results) => {
       if (err) {

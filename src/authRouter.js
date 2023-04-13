@@ -17,9 +17,7 @@ authRouter.post("/register", async (req, res) => {
       res.status(500).json({ message: err });
       return;
     }
-    res
-      .status(201)
-      .json({ message: "User created with id: " + results.rows[0].id });
+    res.status(201).json(results.rows[0]);
   });
 });
 
