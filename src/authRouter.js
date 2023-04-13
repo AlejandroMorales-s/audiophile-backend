@@ -21,18 +21,28 @@ authRouter.post("/register", async (req, res) => {
   });
 });
 
-authRouter.post(
-  "/login",
-  passport.authenticate("local", { failureRedirect: "/login" }),
-  (req, res) => {
-    res.status(200).json(req.user);
-  }
-);
+authRouter.post("/login", passport.authenticate("local"), (req, res) => {
+  const { id, email, last_name, first_name } = req.user;
+
+  const user = {
+    id,
+    email,
+    last_name,
+    first_name,
+  };
+
+  res.status(200).json(user);
+});
 
 authRouter.get("/logout", (req, res) => {
   req.logout(() => {
     res.status(200).json({ message: "Logged out successfully" });
   });
+});
+
+//* Error handler
+authRouter.use((err, req, res, next) => {
+  res.status(500).json({ message: err });
 });
 
 module.exports = authRouter;
