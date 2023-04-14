@@ -2,6 +2,18 @@ const authRouter = require("express").Router();
 const passport = require("passport");
 const { createUser, getUserByEmail } = require("../db");
 
+const ensureAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ message: "Unauthorized" });
+};
+
+authRouter.get("/authenticate", ensureAuthenticated, (req, res) => {
+  const { id, email, last_name, first_name } = req.user;
+  res.status(200).json({ id, email, last_name, first_name });
+});
+
 authRouter.post("/register", async (req, res) => {
   const user = req.body;
 
