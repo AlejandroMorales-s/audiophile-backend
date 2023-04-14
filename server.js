@@ -9,20 +9,21 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-app.use(
-  cors({
-    origin: "*",
-  })
-);
+app.use(cors());
 
-app.use(
-  session({
-    secret: "tnsclxgdl.aopsnaoethu",
-    cookie: { maxAge: 172800000, secure: true, sameSite: "none" },
-    saveUninitialized: false,
-    resave: false,
-  })
-);
+const sessionConfig = {
+  secret: "tnsclxgdl.aopsnaoethu",
+  cookie: { maxAge: 172800000, secure: false, sameSite: "none" },
+  saveUninitialized: false,
+  resave: false,
+};
+
+if (app.get("env") === "production") {
+  app.set("trust proxy", 1);
+  sessionConfig.cookie.secure = true;
+}
+
+app.use(session(sessionConfig));
 
 app.use(passport.initialize());
 app.use(passport.session());
