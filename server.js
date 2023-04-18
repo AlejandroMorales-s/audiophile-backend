@@ -1,5 +1,4 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
@@ -36,8 +35,9 @@ app.use(session(sessionConfig));
 app.use(passport.initialize());
 app.use(passport.session());
 
-//* Body parser middleware
-app.use(bodyParser.json());
+//* JSON parser
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.use("/", require("./src/api"));
 
