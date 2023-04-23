@@ -63,11 +63,11 @@ shoppingCartRouter.delete("/", async (req, res) => {
 shoppingCartRouter.post("/", async (req, res) => {
   try {
     const user_id = req.session.passport.user;
-    const { product_id, quantity } = req.body;
+    const { productId, quantity } = req.body;
 
     await addItemToShoppingCart({
       user_id,
-      product_id,
+      product_id: productId,
       quantity,
     });
 
@@ -82,13 +82,13 @@ shoppingCartRouter.post("/", async (req, res) => {
 //* Update item quantity in shopping cart
 shoppingCartRouter.put("/:product_id", async (req, res) => {
   try {
-    const { product_id } = req.params;
+    const { productId } = req.params;
     const user_id = req.session.passport.user;
     const { quantity } = req.body;
 
     await updateItemQuantityInShoppingCart({
       user_id,
-      product_id,
+      product_id: productId,
       quantity,
     });
 
