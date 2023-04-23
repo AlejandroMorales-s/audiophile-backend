@@ -19,7 +19,7 @@ app.use(
 );
 
 const sessionConfig = {
-  secret: "tnsclxgdl.aopsnaoethu",
+  secret: process.env.SESSION_SECRET,
   cookie: { maxAge: 172800000, secure: false, sameSite: "none" },
   saveUninitialized: false,
   resave: false,
