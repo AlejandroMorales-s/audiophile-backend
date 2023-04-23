@@ -13,9 +13,9 @@ shoppingCartRouter.use(ensureAuthenticated);
 //* Get shopping cart
 shoppingCartRouter.get("/", async (req, res) => {
   try {
-    const user_id = req.session.passport.user;
+    const { id } = req.user;
 
-    const shoppingCart = await getShoppingCart({ user_id });
+    const shoppingCart = await getShoppingCart({ userId: id });
 
     res.json(shoppingCart);
   } catch (error) {
@@ -24,17 +24,17 @@ shoppingCartRouter.get("/", async (req, res) => {
 });
 
 //* Delete item from shopping cart
-shoppingCartRouter.delete("/:product_id", async (req, res) => {
+shoppingCartRouter.delete("/:productId", async (req, res) => {
   try {
-    const { product_id } = req.params;
-    const user_id = req.session.passport.user;
+    const { productId } = req.params;
+    const { id } = req.user;
 
     await deleteItemFromShoppingCart({
-      product_id,
-      user_id,
+      productId,
+      userId: id,
     });
 
-    const shoppingCart = await getShoppingCart({ user_id });
+    const shoppingCart = await getShoppingCart({ userId: id });
 
     res.json(shoppingCart);
   } catch (error) {
@@ -45,13 +45,13 @@ shoppingCartRouter.delete("/:product_id", async (req, res) => {
 //* Delete all items from shopping cart
 shoppingCartRouter.delete("/", async (req, res) => {
   try {
-    const user_id = req.session.passport.user;
+    const { id } = req.user;
 
     await deleteAllItemsFromShoppingCart({
-      user_id,
+      userId: id,
     });
 
-    const shoppingCart = await getShoppingCart({ user_id });
+    const shoppingCart = await getShoppingCart({ userId: id });
 
     res.json(shoppingCart);
   } catch (error) {
@@ -62,16 +62,16 @@ shoppingCartRouter.delete("/", async (req, res) => {
 //* Add item to shopping cart
 shoppingCartRouter.post("/", async (req, res) => {
   try {
-    const user_id = req.session.passport.user;
+    const { id } = req.user;
     const { productId, quantity } = req.body;
 
     await addItemToShoppingCart({
-      user_id,
-      product_id: productId,
+      userId: id,
+      productId,
       quantity,
     });
 
-    const shoppingCart = await getShoppingCart({ user_id });
+    const shoppingCart = await getShoppingCart({ userId: id });
 
     res.json(shoppingCart);
   } catch (error) {
@@ -80,19 +80,19 @@ shoppingCartRouter.post("/", async (req, res) => {
 });
 
 //* Update item quantity in shopping cart
-shoppingCartRouter.put("/:product_id", async (req, res) => {
+shoppingCartRouter.put("/:productId", async (req, res) => {
   try {
     const { productId } = req.params;
-    const user_id = req.session.passport.user;
+    const { id } = req.user;
     const { quantity } = req.body;
 
     await updateItemQuantityInShoppingCart({
-      user_id,
-      product_id: productId,
+      userId: id,
+      productId,
       quantity,
     });
 
-    const shoppingCart = await getShoppingCart({ user_id });
+    const shoppingCart = await getShoppingCart({ userId: id });
 
     res.json(shoppingCart);
   } catch (error) {

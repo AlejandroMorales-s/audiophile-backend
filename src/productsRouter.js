@@ -16,10 +16,10 @@ productsRouter.get("/", async (req, res) => {
 });
 
 //* Get a single product by id
-productsRouter.get("/:id", async (req, res) => {
-  const { id } = req.params;
+productsRouter.get("/:productId", async (req, res) => {
+  const { productId } = req.params;
   try {
-    const product = await getProductById(id);
+    const product = await getProductById({ productId });
 
     if (!product.length) {
       return res.status(404).json({ message: "Product not found" });
@@ -35,7 +35,7 @@ productsRouter.get("/:id", async (req, res) => {
 productsRouter.get("/category/:category", async (req, res) => {
   const { category } = req.params;
   try {
-    const products = await getProductsByCategory(category);
+    const products = await getProductsByCategory({ category });
 
     if (!products.length) {
       return res.status(404).json({ message: "Products not found" });

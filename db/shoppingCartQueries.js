@@ -11,16 +11,16 @@ const baseQuery = `
     ON sc.product_id = p.id
 `;
 
-const getShoppingCart = ({ user_id }) => {
+const getShoppingCart = ({ userId }) => {
   return new Promise((resolve, reject) => {
-    pool.query(`${baseQuery} WHERE user_id = $1`, [user_id], (err, results) => {
+    pool.query(`${baseQuery} WHERE user_id = $1`, [userId], (err, results) => {
       if (err) return reject(err.message);
       resolve(results.rows);
     });
   });
 };
 
-const deleteItemFromShoppingCart = ({ product_id, user_id }) => {
+const deleteItemFromShoppingCart = ({ productId, userId }) => {
   return new Promise((resolve, reject) => {
     pool.query(
       `
@@ -28,7 +28,7 @@ const deleteItemFromShoppingCart = ({ product_id, user_id }) => {
        WHERE product_id = $1
          AND user_id = $2      
       `,
-      [product_id, user_id],
+      [productId, userId],
       (err, results) => {
         if (err) return reject(err.message);
         resolve(results.rows);
@@ -37,14 +37,14 @@ const deleteItemFromShoppingCart = ({ product_id, user_id }) => {
   });
 };
 
-const deleteAllItemsFromShoppingCart = ({ user_id }) => {
+const deleteAllItemsFromShoppingCart = ({ userId }) => {
   return new Promise((resolve, reject) => {
     pool.query(
       `
         DELETE FROM shopping_cart
         WHERE user_id = $1
       `,
-      [user_id],
+      [userId],
       (err, results) => {
         if (err) return reject(err.message);
         resolve(results.rows);
@@ -53,14 +53,14 @@ const deleteAllItemsFromShoppingCart = ({ user_id }) => {
   });
 };
 
-const addItemToShoppingCart = ({ user_id, product_id, quantity }) => {
+const addItemToShoppingCart = ({ userId, productId, quantity }) => {
   return new Promise((resolve, reject) => {
     pool.query(
       `
         INSERT INTO shopping_cart
         VALUES ($1, $2, $3)
       `,
-      [user_id, product_id, quantity],
+      [userId, productId, quantity],
       (err, results) => {
         if (err) return reject(err.message);
         resolve(results.rows);
@@ -69,11 +69,7 @@ const addItemToShoppingCart = ({ user_id, product_id, quantity }) => {
   });
 };
 
-const updateItemQuantityInShoppingCart = ({
-  user_id,
-  product_id,
-  quantity,
-}) => {
+const updateItemQuantityInShoppingCart = ({ userId, productId, quantity }) => {
   return new Promise((resolve, reject) => {
     pool.query(
       `
@@ -82,7 +78,7 @@ const updateItemQuantityInShoppingCart = ({
         WHERE user_id = $1
           AND product_id = $2
       `,
-      [user_id, product_id, quantity],
+      [userId, productId, quantity],
       (err, results) => {
         if (err) return reject(err.message);
         resolve(results.rows);

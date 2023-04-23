@@ -19,16 +19,20 @@ const getAllProducts = () => {
   });
 };
 
-const getProductById = (id) => {
+const getProductById = ({ productId }) => {
   return new Promise((resolve, reject) => {
-    pool.query(`${baseQuery} WHERE products.id = $1`, [id], (err, results) => {
-      if (err) return reject(err.message);
-      resolve(results.rows);
-    });
+    pool.query(
+      `${baseQuery} WHERE products.id = $1`,
+      [productId],
+      (err, results) => {
+        if (err) return reject(err.message);
+        resolve(results.rows);
+      }
+    );
   });
 };
 
-const getProductsByCategory = (category) => {
+const getProductsByCategory = ({ category }) => {
   return new Promise((resolve, reject) => {
     pool.query(
       `${baseQuery} WHERE category = $1`,
