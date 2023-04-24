@@ -5,5 +5,6 @@ apiRouter.use("/products", require("./productsRouter"));
 apiRouter.use("/sentiment-analysis", require("./sentimentAnalysisRouter"));
 apiRouter.use("/shopping-cart", require("./shoppingCartRouter"));
 apiRouter.use("/wishlist", require("./wishlistRouter"));
+apiRouter.use("/user", require("./userRouter"));
 
 module.exports = apiRouter;
