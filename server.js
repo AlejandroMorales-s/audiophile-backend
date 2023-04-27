@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
+const device = require("express-device");
 const passport = require("passport");
 require("./src/passport");
 
@@ -38,6 +39,7 @@ app.use(passport.session());
 //* JSON parser
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(device.capture());
 
 app.use("/", require("./src/api"));
 
