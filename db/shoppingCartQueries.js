@@ -5,18 +5,26 @@ const baseQuery = `
     p.name,
     p.price,
     p.id AS product_id,
-    sc.quantity
+    sc.quantity,
+    pi.image_url
   FROM shopping_cart sc
   JOIN products p
     ON sc.product_id = p.id
+  JOIN product_image pi
+    ON sc.product_id = pi.product_id
+    AND pi.image_url LIKE '%' || $1 || '%'
 `;
 
-const getShoppingCart = ({ userId }) => {
+const getShoppingCart = ({ device, userId }) => {
   return new Promise((resolve, reject) => {
-    pool.query(`${baseQuery} WHERE user_id = $1`, [userId], (err, results) => {
-      if (err) return reject(err.message);
-      resolve(results.rows);
-    });
+    pool.query(
+      `${baseQuery} WHERE user_id = $2`,
+      [device, userId],
+      (err, results) => {
+        if (err) return reject(err.message);
+        resolve(results.rows);
+      }
+    );
   });
 };
 
