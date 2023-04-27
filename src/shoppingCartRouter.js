@@ -6,6 +6,7 @@ const {
   updateItemQuantityInShoppingCart,
   deleteAllItemsFromShoppingCart,
 } = require("../db");
+const getDeviceType = require("./helpers/getDeviceType");
 const { ensureAuthenticated } = require("./middlewares");
 
 shoppingCartRouter.use(ensureAuthenticated);
@@ -14,8 +15,9 @@ shoppingCartRouter.use(ensureAuthenticated);
 shoppingCartRouter.get("/", async (req, res) => {
   try {
     const { id } = req.user;
+    const device = getDeviceType({ device: req.device });
 
-    const shoppingCart = await getShoppingCart({ userId: id });
+    const shoppingCart = await getShoppingCart({ device, userId: id });
 
     res.json(shoppingCart);
   } catch (error) {
