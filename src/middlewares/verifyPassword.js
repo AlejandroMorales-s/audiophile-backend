@@ -8,7 +8,7 @@ const verifyPassword = async (req, res, next) => {
 
   if (passwordMatch) return next();
 
-  return res.status(400).json({ message: "Passwords don't match" });
+  return res.status(400).json({ message: "Wrong password" });
 };
 
 module.exports = verifyPassword;
