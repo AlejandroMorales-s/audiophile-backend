@@ -14,8 +14,6 @@ app.use(
     origin: ["http://localhost:5173", process.env.FRONTEND_URL],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    headers: { "Access-Control-Allow-Origin": "*" },
   })
 );
 
@@ -35,6 +33,11 @@ app.use(session(sessionConfig));
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
 
 //* JSON parser
 app.use(express.urlencoded({ extended: false }));
