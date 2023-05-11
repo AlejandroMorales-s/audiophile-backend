@@ -1,13 +1,7 @@
 const userRouter = require("express").Router();
 const bcrypt = require("bcrypt");
-const {
-  ensureAuthenticated,
-  verifyPassword,
-  verifyIfEmailExists,
-} = require("./middlewares");
+const { verifyPassword, verifyIfEmailExists } = require("./middlewares");
 const { updatePassword, updateEmail, updateFullname } = require("../db");
-
-userRouter.use(ensureAuthenticated);
 
 //* Update user password
 userRouter.put("/update-password", verifyPassword, async (req, res) => {

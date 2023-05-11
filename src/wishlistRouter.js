@@ -1,9 +1,6 @@
-const { getWishlist, addToWishlist, deleteFromWishlist } = require("../db");
-const { ensureAuthenticated } = require("./middlewares");
-
 const wishlistRouter = require("express").Router();
 
-wishlistRouter.use(ensureAuthenticated);
+const { getWishlist, addToWishlist, deleteFromWishlist } = require("../db");
 
 //* Get wishlist
 wishlistRouter.get("/", async (req, res) => {
