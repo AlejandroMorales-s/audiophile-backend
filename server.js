@@ -21,7 +21,7 @@ app.use(
 
 const sessionConfig = {
   secret: process.env.SESSION_SECRET,
-  cookie: { maxAge: 172800000, secure: false, sameSite: "none" },
+  cookie: { maxAge: 172800000, secure: false, sameSite: "lax" },
   saveUninitialized: false,
   resave: false,
 };
