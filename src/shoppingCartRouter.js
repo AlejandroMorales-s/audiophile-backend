@@ -7,6 +7,9 @@ const {
   deleteAllItemsFromShoppingCart,
 } = require("../db");
 const getDeviceType = require("./helpers/getDeviceType");
+const { ensureAuthenticated } = require("./middlewares");
+
+shoppingCartRouter.use(ensureAuthenticated);
 
 //* Get shopping cart
 shoppingCartRouter.get("/", async (req, res) => {
