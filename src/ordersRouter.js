@@ -3,9 +3,6 @@ const ordersRouter = require("express").Router();
 const calculateOrderAmount = require("./helpers/calculateOrderAmount");
 const { getShoppingCart, createOrder, getOrders } = require("../db");
 const getDeviceType = require("./helpers/getDeviceType");
-const { ensureAuthenticated } = require("./middlewares");
-
-ordersRouter.use(ensureAuthenticated);
 
 ordersRouter.get("/", async (req, res) => {
   try {
