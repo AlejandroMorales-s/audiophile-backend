@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
+const pgSession = require("connect-pg-simple")(session);
 const device = require("express-device");
 const passport = require("passport");
 require("./src/passport");
@@ -20,6 +21,10 @@ app.use(
 );
 
 const sessionConfig = {
+  store: new pgSession({
+    conString: `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`,
+    tableName: "sessions",
+  }),
   secret: process.env.SESSION_SECRET,
   cookie: { maxAge: 172800000, secure: false, sameSite: "none" },
   saveUninitialized: false,
