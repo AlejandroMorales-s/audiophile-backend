@@ -6,10 +6,7 @@ const stripe = require("stripe")(process.env.STRIPE_API_KEY);
 stripeRouter.post("/create-payment-intent", async (req, res) => {
   const { items } = req.body;
 
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://audiophile-ecommerce-chi.vercel.app"
-  );
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
