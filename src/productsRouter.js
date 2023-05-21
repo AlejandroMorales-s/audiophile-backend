@@ -24,15 +24,14 @@ productsRouter.get("/:productId", async (req, res) => {
   const device = getDeviceType({ device: req.device });
 
   try {
-    const product = await getProductById({ device, productId });
+    const product = await getProductById({
+      device,
+      productId: parseInt(productId),
+    });
 
-    if (!product.length) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
-    res.json(product[0]);
+    res.json(product);
   } catch (error) {
-    res.status(500).json({ message: error });
+    res.status(500).json({ message: "Unhandled error" });
   }
 });
 

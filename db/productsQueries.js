@@ -1,51 +1,43 @@
-const pool = require("./dbConnection");
+const { PrismaClient } = require("@prisma/client");
 
-const baseQuery = `
-  SELECT 
-    products.*, 
-    product_details.includes, 
-    product_details.features,
-    product_image.image_url
-  FROM products 
-  JOIN product_details 
-    ON products.id = product_details.product_id
-  JOIN product_image
-    ON products.id = product_image.product_id
-    AND product_image.image_url LIKE '%' || $1 || '%'
-  `;
+const prisma = new PrismaClient();
 
-const getAllProducts = ({ device }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(baseQuery, [device], (err, results) => {
-      if (err) return reject(err.message);
-      resolve(results.rows);
-    });
+const accessingToProductObject = ({ device }) => {
+  return {
+    product_details: {
+      select: {
+        includes: true,
+        features: true,
+      },
+    },
+    product_image: {
+      select: { image_url: true },
+      where: {
+        image_url: {
+          contains: device,
+        },
+      },
+    },
+  };
+};
+
+const getAllProducts = async ({ device }) => {
+  return await prisma.products.findMany({
+    include: accessingToProductObject({ device }),
   });
 };
 
-const getProductById = ({ productId, device }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `${baseQuery} WHERE products.id = $2`,
-      [device, productId],
-      (err, results) => {
-        if (err) return reject(err.message);
-        resolve(results.rows);
-      }
-    );
+const getProductById = async ({ device, productId }) => {
+  return await prisma.products.findFirstOrThrow({
+    where: { id: productId },
+    include: accessingToProductObject({ device }),
   });
 };
 
-const getProductsByCategory = ({ device, category }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `${baseQuery} WHERE category = $2`,
-      [device, category],
-      (err, results) => {
-        if (err) return reject(err.message);
-        resolve(results.rows);
-      }
-    );
+const getProductsByCategory = async ({ device, category }) => {
+  return await prisma.products.findMany({
+    where: { category },
+    include: accessingToProductObject({ device }),
   });
 };
 
