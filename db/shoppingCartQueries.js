@@ -1,97 +1,77 @@
-const pool = require("./dbConnection");
+const { PrismaClient } = require("@prisma/client");
 
-const baseQuery = `
-  SELECT 
-    p.name,
-    p.price,
-    p.id AS product_id,
-    sc.quantity,
-    pi.image_url
-  FROM shopping_cart sc
-  JOIN products p
-    ON sc.product_id = p.id
-  JOIN product_image pi
-    ON sc.product_id = pi.product_id
-    AND pi.image_url LIKE '%' || $1 || '%'
-`;
+const prisma = new PrismaClient();
 
-const getShoppingCart = ({ device, userId }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `${baseQuery} WHERE user_id = $2`,
-      [device, userId],
-      (err, results) => {
-        if (err) return reject(err.message);
-        resolve(results.rows);
-      }
-    );
+const getShoppingCart = async ({ device, userId }) => {
+  return await prisma.shopping_cart.findMany({
+    where: { user_id: userId },
+
+    select: {
+      quantity: true,
+
+      products: {
+        select: {
+          name: true,
+          price: true,
+          id: true,
+
+          product_image: {
+            select: {
+              image_url: true,
+            },
+
+            where: {
+              image_url: {
+                contains: device,
+              },
+            },
+          },
+        },
+      },
+    },
   });
 };
 
-const deleteItemFromShoppingCart = ({ productId, userId }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `
-       DELETE FROM shopping_cart 
-       WHERE product_id = $1
-         AND user_id = $2      
-      `,
-      [productId, userId],
-      (err, results) => {
-        if (err) return reject(err.message);
-        resolve(results.rows);
-      }
-    );
+const addItemToShoppingCart = async ({ productId, quantity, userId }) => {
+  return await prisma.shopping_cart.create({
+    data: {
+      product_id: productId,
+      quantity: parseInt(quantity),
+      user_id: userId,
+    },
   });
 };
 
-const deleteAllItemsFromShoppingCart = ({ userId }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `
-        DELETE FROM shopping_cart
-        WHERE user_id = $1
-      `,
-      [userId],
-      (err, results) => {
-        if (err) return reject(err.message);
-        resolve(results.rows);
-      }
-    );
+const deleteItemFromShoppingCart = async ({ productId, userId }) => {
+  return await prisma.shopping_cart.delete({
+    where: { user_id_product_id: { product_id: productId, user_id: userId } },
   });
 };
 
-const addItemToShoppingCart = ({ userId, productId, quantity }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `
-        INSERT INTO shopping_cart
-        VALUES ($1, $2, $3)
-      `,
-      [userId, productId, quantity],
-      (err, results) => {
-        if (err) return reject(err.message);
-        resolve(results.rows);
-      }
-    );
+const deleteAllItemsFromShoppingCart = async ({ userId }) => {
+  return await prisma.shopping_cart.deleteMany({
+    where: { user_id: userId },
   });
 };
 
-const updateItemQuantityInShoppingCart = ({ userId, productId, quantity }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `
-        UPDATE shopping_cart
-        SET quantity = $3
-        WHERE user_id = $1
-          AND product_id = $2
-      `,
-      [userId, productId, quantity],
-      (err, results) => {
-        if (err) return reject(err.message);
-        resolve(results.rows);
-      }
-    );
+const updateItemQuantityInShoppingCart = async ({
+  userId,
+  productId,
+  quantity,
+}) => {
+  return await prisma.shopping_cart.update({
+    where: {
+      user_id_product_id: {
+        product_id: productId,
+        user_id: userId,
+      },
+    },
+    data: {
+      quantity,
+    },
+    select: {
+      quantity: true,
+    },
   });
 };
 
