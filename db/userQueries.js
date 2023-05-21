@@ -1,111 +1,102 @@
-const pool = require("./dbConnection");
-const bcrypt = require("bcrypt");
+//* Import required modules
+const { PrismaClient } = require("@prisma/client");
+const hashPassword = require("../src/helpers/hashPassword");
 
-const getUserByEmail = (email) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email],
-      (err, results) => {
-        if (err) return reject(err);
-        resolve(results.rows[0]);
-      }
-    );
+//* Create a new instance of PrismaClient
+const prisma = new PrismaClient();
+
+//* Function to define the selected properties of the user object
+const accessingToUserObject = () => {
+  return {
+    id: true,
+    email: true,
+    last_name: true,
+    first_name: true,
+    password: true,
+  };
+};
+
+//* Function to retrieve a user by their email
+const getUserByEmail = async ({ email }) => {
+  return await prisma.users.findUnique({
+    where: {
+      email: email,
+    },
   });
 };
 
-const getUserById = (id) => {
-  return new Promise((resolve, reject) => {
-    pool.query("SELECT * FROM users WHERE id = $1", [id], (err, results) => {
-      if (err) return reject(err);
-      resolve(results.rows[0]);
-    });
+//* Function to retrieve a user by their ID with selected properties
+const getUserById = async ({ userId }) => {
+  return await prisma.users.findUnique({
+    where: {
+      id: userId,
+    },
+    select: accessingToUserObject(),
   });
 };
 
-const createUser = async (user, callback) => {
-  const { email, password, lastName, firstName } = user;
-
-  const salt = await bcrypt.genSalt(10);
-  const passwordHashed = await bcrypt.hash(password, salt);
-
-  pool.query(
-    `
-     INSERT INTO users VALUES (
-      DEFAULT, 
-      $1, 
-      $2, 
-      $3, 
-      $4) 
-     RETURNING id, email, last_name, first_name
-    `,
-    [email, passwordHashed, lastName, firstName],
-    (err, results) => {
-      if (err) {
-        callback(err.message, null);
-        return;
-      }
-      callback(null, results);
-    }
-  );
-};
-
-const updatePassword = async ({ userId, newPassword }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `
-        UPDATE users
-        SET password = $2
-        WHERE id = $1
-        RETURNING id, email, last_name, first_name
-      `,
-      [userId, newPassword],
-      (err, results) => {
-        if (err) return reject(err.message);
-        resolve(results.rows);
-      }
-    );
+//* Function to update the full name of a user
+const updateFullname = async ({ firstName, lastName, userId }) => {
+  return await prisma.users.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      first_name: firstName,
+      last_name: lastName,
+    },
+    select: accessingToUserObject(),
   });
 };
 
-const updateEmail = async ({ userId, newEmail }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `
-        UPDATE users
-        SET email = $2
-        WHERE id = $1
-        RETURNING id, email, last_name, first_name
-      `,
-      [userId, newEmail],
-      (err, results) => {
-        if (err) return reject(err.message);
-        resolve(results.rows);
-      }
-    );
+//* Function to update the email of a user
+const updateEmail = async ({ newEmail, userId }) => {
+  return await prisma.users.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      email: newEmail,
+    },
+    select: accessingToUserObject(),
   });
 };
 
-const updateFullname = async ({ userId, firstName, lastName }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `
-        UPDATE users
-        SET 
-         first_name = $2, 
-         last_name = $3
-        WHERE id = $1
-        RETURNING id, email, last_name, first_name
-      `,
-      [userId, firstName, lastName],
-      (err, results) => {
-        if (err) return reject(err.message);
-        resolve(results.rows);
-      }
-    );
+//* Function to update the password of a user
+const updatePassword = async ({ newPassword, userId }) => {
+  const hashedPassword = await hashPassword({ password: newPassword });
+
+  return await prisma.users.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      password: hashedPassword,
+    },
+    select: accessingToUserObject(),
   });
 };
 
+//* Function to create a new user
+const createUser = async ({ userData }) => {
+  const { email, password, lastName, firstName } = userData;
+
+  //* Hash the password
+  const passwordHashed = await hashPassword({ password });
+
+  //* Create a new user in the database
+  return await prisma.users.create({
+    data: {
+      email,
+      first_name: firstName,
+      last_name: lastName,
+      password: passwordHashed,
+    },
+    select: accessingToUserObject(),
+  });
+};
+
+//* Export the functions for external use
 module.exports = {
   getUserByEmail,
   createUser,

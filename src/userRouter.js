@@ -1,19 +1,17 @@
+//* Import required modules and functions
 const userRouter = require("express").Router();
-const bcrypt = require("bcrypt");
 const { verifyPassword, verifyIfEmailExists } = require("./middlewares");
 const { updatePassword, updateEmail, updateFullname } = require("../db");
 
-//* Update user password
+//* Route to update user password
 userRouter.put("/update-password", verifyPassword, async (req, res) => {
   try {
     const { newPassword } = req.body;
     const { id } = req.user;
 
-    const salt = await bcrypt.genSalt(10);
-    const newPasswordHashed = await bcrypt.hash(newPassword, salt);
-
+    //* Update the user's password in the database
     const userWithPasswordUpdated = await updatePassword({
-      newPassword: newPasswordHashed,
+      newPassword,
       userId: id,
     });
 
@@ -23,7 +21,7 @@ userRouter.put("/update-password", verifyPassword, async (req, res) => {
   }
 });
 
-//* Update user email
+//* Route to update user email
 userRouter.put(
   "/update-email",
   verifyPassword,
@@ -33,6 +31,7 @@ userRouter.put(
       const { newEmail } = req.body;
       const { id } = req.user;
 
+      //* Update the user's email in the database
       const userWithEmailUpdated = await updateEmail({
         newEmail,
         userId: id,
@@ -45,16 +44,17 @@ userRouter.put(
   }
 );
 
-//* Update user fullname
+//* Route to update user fullname
 userRouter.put("/update-fullname", async (req, res) => {
   try {
     const { firstName, lastName } = req.body;
     const { id } = req.user;
 
+    //* Update the user's fullname in the database
     const updatedUser = await updateFullname({
       firstName,
       lastName,
-      userId: id,
+      userId: parseInt(id),
     });
 
     res.json(updatedUser);
@@ -63,4 +63,5 @@ userRouter.put("/update-fullname", async (req, res) => {
   }
 });
 
+//* Export the router
 module.exports = userRouter;
