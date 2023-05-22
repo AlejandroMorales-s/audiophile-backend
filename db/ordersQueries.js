@@ -1,40 +1,24 @@
-const pool = require("./dbConnection");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
-const createOrder = ({ pricing, products, shippingInfo, userId }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `
-        INSERT INTO orders VALUES (
-          DEFAULT,
-          $1,
-          $2,
-          $3,
-          $4
-        )
-        RETURNING products, pricing
-      `,
-      [userId, products, pricing, shippingInfo],
-      (err, results) => {
-        if (err) return reject(err.message);
-        resolve(results.rows);
-      }
-    );
+const getOrders = async ({ userId }) => {
+  return await prisma.orders.findMany({
+    where: { user_id: userId },
   });
 };
-const getOrders = ({ userId }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `
-        SELECT * 
-        FROM orders
-        WHERE user_id = $1
-      `,
-      [userId],
-      (err, results) => {
-        if (err) return reject(err.message);
-        resolve(results.rows);
-      }
-    );
+
+const createOrder = async ({ pricing, products, shippingInfo, userId }) => {
+  return await prisma.orders.create({
+    data: {
+      pricing,
+      shipping_info: shippingInfo,
+      products,
+      user_id: userId,
+    },
+    select: {
+      products: true,
+      pricing: true,
+    },
   });
 };
 

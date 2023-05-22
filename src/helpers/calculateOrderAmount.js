@@ -4,8 +4,10 @@ const calculateOrderAmount = (items) => {
   let vat = 0;
   let grandTotal = 0;
 
-  items.forEach((product) => {
-    const { price, quantity } = product;
+  items.forEach((item) => {
+    const { products, quantity } = item;
+    const { price } = products;
+
     const currentProductTotal = price * quantity;
 
     total += currentProductTotal;
