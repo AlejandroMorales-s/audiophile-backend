@@ -80,6 +80,7 @@ model products {
   product_image           product_image[]
   product_reviews         product_reviews[]
   shopping_cart           shopping_cart[]
+  wishlist                wishlist[]
 }
 
 model sessions {
@@ -100,6 +101,15 @@ model shopping_cart {
   @@id([user_id, product_id])
 }
 
+model wishlist {
+  user_id    Int
+  product_id Int
+  products   products @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([user_id, product_id])
+}
+
 model users {
   id              Int               @id @default(autoincrement())
   email           String            @unique @db.VarChar(255)
@@ -109,4 +119,5 @@ model users {
   orders          orders[]
   product_reviews product_reviews[]
   shopping_cart   shopping_cart[]
+  wishlist        wishlist[]
 }
