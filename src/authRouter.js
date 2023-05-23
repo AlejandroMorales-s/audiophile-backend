@@ -12,8 +12,16 @@ authRouter.get("/authenticate", ensureAuthenticated, (req, res) => {
   res.json(userData);
 });
 
+//* Route to handle user login
+authRouter.post("/login", passport.authenticate("local"), (req, res) => {
+  const userData = req.user;
+  delete userData.password;
+
+  res.json(userData);
+});
+
 //* Route to register a new user
-authRouter.post("/register", async (req, res) => {
+authRouter.post("/register", async (req, res, next) => {
   const userData = req.body;
 
   //* Check if the user already exists in the database
@@ -25,17 +33,29 @@ authRouter.post("/register", async (req, res) => {
   }
 
   //* Create a new user in the database
-  const userCreated = await createUser({ userData });
+  await createUser({ userData });
 
-  res.json(userCreated);
-});
+  //* Run passport.authenticate("local") middleware
+  passport.authenticate("local", (err, user, info) => {
+    console.log(err, user, info);
+    if (err) {
+      return next(err);
+    }
 
-//* Route to handle user login
-authRouter.post("/login", passport.authenticate("local"), (req, res) => {
-  const userData = req.user;
-  delete userData.password;
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
 
-  res.json(userData);
+    //* If authentication succeeds, you can manually log in the user
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+
+      //* User is successfully logged in
+      return res.json(user);
+    });
+  })(req, res, next);
 });
 
 //* Route to handle user logout
