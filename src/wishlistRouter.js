@@ -26,7 +26,7 @@ wishlistRouter.post("/:productId", async (req, res) => {
 
     await addToWishlist({
       userId: id,
-      productId,
+      productId: parseInt(productId),
     });
 
     const wishlist = await getWishlist({ userId: id });
@@ -43,7 +43,7 @@ wishlistRouter.delete("/:productId", async (req, res) => {
     const { id } = req.user;
     const { productId } = req.params;
 
-    await deleteFromWishlist({ userId: id, productId });
+    await deleteFromWishlist({ userId: id, productId: parseInt(productId) });
 
     const wishlist = await getWishlist({ userId: id });
 

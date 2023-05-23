@@ -1,51 +1,41 @@
-const pool = require("./dbConnection");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
-const baseQuery = `
-  SELECT 
-    p.name,
-    p.price,
-    p.id AS product_id
-  FROM wishlist wl
-  JOIN products p
-    ON wl.product_id = p.id
-`;
-
-const getWishlist = ({ userId }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(`${baseQuery} WHERE user_id = $1`, [userId], (err, results) => {
-      if (err) return reject(err.message);
-      resolve(results.rows);
-    });
+//* Retrieves the wishlist items for a given user ID
+const getWishlist = async ({ userId }) => {
+  return await prisma.wishlist.findMany({
+    where: { user_id: userId },
+    include: {
+      products: {
+        select: {
+          name: true,
+          price: true,
+          id: true,
+        },
+      },
+    },
   });
 };
 
-const addToWishlist = ({ userId, productId }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `INSERT INTO wishlist VALUES($1, $2) RETURNING *`,
-      [userId, productId],
-      (err, results) => {
-        if (err) return reject(err.message);
-        resolve(results.rows);
-      }
-    );
+//* Adds a product to the wishlist for a given user ID
+const addToWishlist = async ({ userId, productId }) => {
+  return await prisma.wishlist.create({
+    data: {
+      product_id: productId,
+      user_id: userId,
+    },
   });
 };
 
-const deleteFromWishlist = ({ userId, productId }) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `
-       DELETE FROM wishlist
-       WHERE user_id = $1 
-        AND product_id = $2
-      `,
-      [userId, productId],
-      (err, results) => {
-        if (err) return reject(err.message);
-        resolve(results.rows);
-      }
-    );
+//* Deletes a product from the wishlist for a given user ID
+const deleteFromWishlist = async ({ userId, productId }) => {
+  return await prisma.wishlist.delete({
+    where: {
+      user_id_product_id: {
+        product_id: productId,
+        user_id: userId,
+      },
+    },
   });
 };
 
