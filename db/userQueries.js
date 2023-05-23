@@ -20,7 +20,7 @@ const accessingToUserObject = () => {
 const getUserByEmail = async ({ email }) => {
   return await prisma.users.findUnique({
     where: {
-      email: email,
+      email,
     },
   });
 };
