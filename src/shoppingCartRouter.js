@@ -17,7 +17,10 @@ shoppingCartRouter.get("/", async (req, res) => {
     const { id } = req.user;
     const device = getDeviceType({ device: req.device });
 
-    const shoppingCart = await getShoppingCart({ device, userId: id });
+    const shoppingCart = await getShoppingCart({
+      device,
+      userId: parseInt(id),
+    });
 
     res.json(shoppingCart);
   } catch (error) {
@@ -32,7 +35,7 @@ shoppingCartRouter.delete("/:productId", async (req, res) => {
     const { id } = req.user;
 
     await deleteItemFromShoppingCart({
-      productId,
+      productId: parseInt(productId),
       userId: id,
     });
 
@@ -88,15 +91,13 @@ shoppingCartRouter.put("/:productId", async (req, res) => {
     const { id } = req.user;
     const { quantity } = req.body;
 
-    await updateItemQuantityInShoppingCart({
+    const quantityUpdated = await updateItemQuantityInShoppingCart({
       userId: id,
-      productId,
-      quantity,
+      productId: parseInt(productId),
+      quantity: parseInt(quantity),
     });
 
-    const shoppingCart = await getShoppingCart({ userId: id });
-
-    res.json(shoppingCart);
+    res.json(quantityUpdated);
   } catch (error) {
     res.status(500).json({ message: error });
   }

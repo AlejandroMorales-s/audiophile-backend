@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./server.js",
-    "dev": "nodemon ./server.js"
+    "dev": "nodemon ./server.js",
+    "postinstall": "prisma generate"
   },
   "keywords": [
     "node",
@@ -24,6 +25,7 @@
   "author": "Alejandro Morales",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^4.14.1",
     "bcrypt": "^5.1.0",
     "cohere-ai": "^6.2.0",
     "connect-pg-simple": "^8.0.0",
@@ -38,5 +40,8 @@
     "passport-local": "^1.0.0",
     "pg": "^8.10.0",
     "stripe": "^12.3.0"
+  },
+  "devDependencies": {
+    "prisma": "^4.14.1"
   }
 }

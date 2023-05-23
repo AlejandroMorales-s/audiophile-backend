@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model orders {
+  id            Int    @default(autoincrement())
+  user_id       Int
+  products      Json[]
+  pricing       Json?
+  shipping_info Json?
+  users         users  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([id, user_id])
+}
+
+model product_category_images {
+  id                     Int      @id @default(autoincrement())
+  product_id             Int
+  category_image_mobile  String
+  category_image_tablet  String
+  category_image_desktop String
+  products               products @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model product_details {
+  id         Int       @id @default(autoincrement())
+  product_id Int?
+  includes   Json
+  features   String
+  products   products? @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model product_gallery {
+  id            Int      @id @default(autoincrement())
+  product_id    Int
+  image_mobile  String
+  image_tablet  String
+  image_desktop String
+  position      Int
+  products      products @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model product_image {
+  product_id Int
+  image_url  String
+  products   products @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([product_id, image_url])
+}
+
+model product_reviews {
+  id         Int      @default(autoincrement())
+  review     String
+  likes      Int?
+  dislikes   Int?
+  product_id Int
+  user_id    Int
+  products   products @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([product_id, user_id])
+}
+
+model products {
+  id                      Int                       @id @default(autoincrement())
+  slug                    String
+  name                    String
+  category                String
+  new                     Boolean
+  price                   Decimal                   @db.Decimal(10, 2)
+  description             String
+  product_category_images product_category_images[]
+  product_details         product_details[]
+  product_gallery         product_gallery[]
+  product_image           product_image[]
+  product_reviews         product_reviews[]
+  shopping_cart           shopping_cart[]
+  wishlist                wishlist[]
+}
+
+model sessions {
+  sid    String   @id @db.VarChar
+  sess   Json     @db.Json
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "idx_expire")
+}
+
+model shopping_cart {
+  user_id    Int
+  product_id Int
+  quantity   Int?
+  products   products @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([user_id, product_id])
+}
+
+model wishlist {
+  user_id    Int
+  product_id Int
+  products   products @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([user_id, product_id])
+}
+
+model users {
+  id              Int               @id @default(autoincrement())
+  email           String            @unique @db.VarChar(255)
+  password        String            @db.VarChar(255)
+  last_name       String            @db.VarChar(255)
+  first_name      String            @db.VarChar(255)
+  orders          orders[]
+  product_reviews product_reviews[]
+  shopping_cart   shopping_cart[]
+  wishlist        wishlist[]
+}
