@@ -5,6 +5,7 @@ const pgSession = require("connect-pg-simple")(session);
 const device = require("express-device");
 const passport = require("passport");
 require("./src/passport");
+require("dotenv").config();
 
 const app = express();
 
@@ -22,7 +23,7 @@ app.use(
 
 const sessionConfig = {
   store: new pgSession({
-    conString: `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`,
+    conString: process.env.DATABASE_URL,
     tableName: "sessions",
   }),
   secret: process.env.SESSION_SECRET,

@@ -20,7 +20,10 @@
     "cors",
     "session",
     "authentication",
-    "oauth"
+    "oauth",
+    "stripe",
+    "cohere-ai",
+    "prisma"
   ],
   "author": "Alejandro Morales",
   "license": "ISC",
@@ -38,7 +41,6 @@
     "oauth2-server": "^3.1.1",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "pg": "^8.10.0",
     "stripe": "^12.3.0"
   },
   "devDependencies": {
